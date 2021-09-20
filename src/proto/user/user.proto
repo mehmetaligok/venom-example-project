@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./../user";
+
+message NewUserRequest {
+  string first_name = 1;
+  string last_name = 2;
+}
+
+message NewUserResponse {
+  ResponseStatus status = 1;
+  string id = 2;
+}
+
+enum ResponseStatus {
+  RESPONSE_STATUS_UNSPECIFIED = 0;
+  RESPONSE_STATUS_CONFIRMED = 1;
+  RESPONSE_STATUS_REJECTED = 2;
+}
+
+service UserService {
+  rpc AddUser(NewUserRequest) returns (NewUserResponse) {};
+}

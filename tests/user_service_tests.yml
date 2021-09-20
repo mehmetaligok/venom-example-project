@@ -1,0 +1,23 @@
+name: User Test Suite
+testcases:
+  - name: InsertUser
+    steps:
+      - type: add_user_grpc
+        firstName: John
+        lastName: Doe
+        info: "Grpc request sent."
+        assertions:
+          - result.status ShouldEqual RESPONSE_STATUS_CONFIRMED
+        vars:
+          userid:
+            from: result.userid
+      - type: sql
+        driver: postgres
+        dsn: '{{.dbdsn}}'
+        commands:
+          - "select * from users where id = '{{.InsertUser.userid}}';"
+        info: 'Checking database for user.'
+        assertions:
+          - result.queries.__len__ ShouldEqual 1
+          - result.queries.queries0.rows.rows0.first_name ShouldEqual John
+          - result.queries.queries0.rows.rows0.last_name ShouldEqual Doe

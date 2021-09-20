@@ -1,0 +1,19 @@
+executor: add_user_grpc
+
+input:
+  firstName: {}
+  lastName: {}
+steps:
+  - type: grpc
+    url: localhost:9090
+    plaintext: true
+    data:
+      first_name: {{.input.firstName}}
+      last_name: {{.input.lastName}}
+    service: user.UserService
+    method: AddUser
+    info: "Grpc response: {{.result.systemout}}"
+output:
+  all: "{{.result.systemoutjson}}"
+  status: "{{.result.systemoutjson.status}}"
+  userid: "{{.result.systemoutjson.id}}"

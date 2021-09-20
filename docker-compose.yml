@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  psql:
+    image: postgres:12.2-alpine
+    volumes:
+      - ./src/db/.data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "test"
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_DB: "venom_db"
+    command: "-c log_statement=all"
+    logging:
+      driver: none
+  example-service:
+    build:
+      context: .
+    ports:
+      - "9090:9090"
+    environment:
+      DB_DSN: "postgres://test:test@psql:5432/venom_db?sslmode=disable"
+      PORT: 9090
+    depends_on:
+      - psql
+
+#  migrations:
+#    image: migrate/migrate
+#    volumes:
+#      - ./src/migrations:/migrations
+#    command: "-path=/migrations/ -database postgres://test:test@psql:5432/venom_db?sslmode=disable up"
+#    depends_on:
+#      - psql
