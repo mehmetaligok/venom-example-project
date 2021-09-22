@@ -14,14 +14,26 @@ services:
     command: "-c log_statement=all"
     logging:
       driver: none
-  example-service:
+  grpc-server:
     build:
       context: .
+    command: /grpc-server
     ports:
       - "9090:9090"
     environment:
       DB_DSN: "postgres://test:test@psql:5432/venom_db?sslmode=disable"
       PORT: 9090
+    depends_on:
+      - psql
+  http-server:
+    build:
+      context: .
+    command: /http-server
+    ports:
+      - "9091:9091"
+    environment:
+      DB_DSN: "postgres://test:test@psql:5432/venom_db?sslmode=disable"
+      PORT: 9091
     depends_on:
       - psql
 

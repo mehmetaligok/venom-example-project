@@ -1,5 +1,12 @@
 name: User Test Suite
 testcases:
+  - name: Initialize database fixtures
+    steps:
+      - type: dbfixtures
+        database: postgres
+        dsn: "{{.dbdsn}}"
+        migrations: ../src/migrations
+        folder: ./fixtures
   - name: InsertUser
     steps:
       - type: add_user_grpc
@@ -21,3 +28,28 @@ testcases:
           - result.queries.__len__ ShouldEqual 1
           - result.queries.queries0.rows.rows0.first_name ShouldEqual John
           - result.queries.queries0.rows.rows0.last_name ShouldEqual Doe
+  - name: GetExistingUser
+    steps:
+      - type: http
+        method: GET
+        url: '{{.user_endpoint}}/6727671a-1983-4978-af30-0caef5c5391e'
+        assertions:
+          - result.statuscode ShouldEqual 200
+          - result.bodyjson.first_name ShouldEqual Jane
+          - result.bodyjson.last_name ShouldEqual Doe
+  - name: GetNonExistingUser
+    steps:
+      - type: http
+        method: GET
+        url: '{{.user_endpoint}}/8642f66e-082d-4087-a997-ae71d5c3cdcf'
+        assertions:
+          - result.statuscode ShouldEqual 404
+          - result.body ShouldEqual User not found.
+  - name: GetWithMalformedUserIDUser
+    steps:
+      - type: http
+        method: GET
+        url: '{{.user_endpoint}}/1234'
+        assertions:
+          - result.statuscode ShouldEqual 422
+          - result.body ShouldContainSubstring Id format is matched

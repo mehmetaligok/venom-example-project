@@ -1,7 +1,8 @@
-package server
+package grpc
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 
 	"github.com/mehmetaligok/venom-example-project/src/model"
@@ -24,7 +25,7 @@ func NewUserServer(repo UserRepo) *UserServer {
 // AddUser add users to database
 func (server *UserServer) AddUser(ctx context.Context, request *pb.NewUserRequest) (*pb.NewUserResponse, error) {
 	user := &model.User{
-		ID: uuid.New(),
+		ID:        uuid.New(),
 		FirstName: request.GetFirstName(),
 		LastName:  request.GetLastName(),
 	}

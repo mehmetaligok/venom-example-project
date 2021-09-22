@@ -10,7 +10,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	pb "github.com/mehmetaligok/venom-example-project/src/proto/user"
 	"github.com/mehmetaligok/venom-example-project/src/repository"
-	"github.com/mehmetaligok/venom-example-project/src/server"
+	grpcServer "github.com/mehmetaligok/venom-example-project/src/server/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,7 +27,7 @@ func main() {
 		log.Fatalf("failed to start grpc server. Error: %v", err)
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", cfg.Port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.Port))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -35,14 +35,13 @@ func main() {
 	userRepo := repository.NewUserRepo(cfg.DSN)
 	s := grpc.NewServer()
 
-	pb.RegisterUserServiceServer(s, server.NewUserServer(userRepo))
+	pb.RegisterUserServiceServer(s, grpcServer.NewUserServer(userRepo))
 	reflection.Register(s)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
 		for range c {
-			// sig is a ^C, handle it
 			log.Println("shutting down gRPC server...")
 
 			s.GracefulStop()
