@@ -4,7 +4,7 @@ testcases:
     steps:
       - type: dbfixtures
         database: postgres
-        dsn: "{{.dbdsn}}"
+        dsn: '{{.dbdsn}}'
         migrations: ../src/migrations
         folder: ./fixtures
   - name: InsertUser
@@ -44,7 +44,7 @@ testcases:
         url: '{{.user_endpoint}}/8642f66e-082d-4087-a997-ae71d5c3cdcf'
         assertions:
           - result.statuscode ShouldEqual 404
-          - result.body ShouldEqual User not found.
+          - result.body ShouldEqual 'User not found.'
   - name: GetWithMalformedUserIDUser
     steps:
       - type: http
@@ -52,4 +52,4 @@ testcases:
         url: '{{.user_endpoint}}/1234'
         assertions:
           - result.statuscode ShouldEqual 422
-          - result.body ShouldContainSubstring Id format is matched
+          - result.body ShouldContainSubstring 'Id format is matched'
